@@ -4,6 +4,7 @@ import os
 
 import torch
 from docx import Document
+from docx.shared import Pt
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 generate_kwargs = {
@@ -57,17 +58,23 @@ def write_to_file(audio_names: list[str], results: list[dict], audio_in_path: st
     # For each audio file, create a docx file with the transcription
     for i, (sample, result) in enumerate(zip(audio_names, results)):
 
-    #Copy curr sample from audio in path to audio out path
+        # Copy curr sample from audio in path to audio out path
         import shutil
         shutil.copy(os.path.join(audio_in_path, sample), audio_out_path)
-
         # Write to file based on the save_type
         for doc_type in save_type.split("_"):
             if doc_type == "docx":
                 doc = Document()
+
+                # Set font size and style
+                doc.styles['Normal'].font.size = Pt(12)
+                doc.styles['Normal'].font.name = 'Arial'
+
                 doc.add_heading(f"Transcription for {sample} - {date}", level=1)
+                # Add a line break
+                doc.add_paragraph("")
                 doc.add_paragraph(result["text"])
-                doc.save(os.path.join(audio_out_path, f"transcription_{sample}.docx"))
+                doc.save(os.path.join(audio_out_path, f"transcription_{sample.split('.')[0]}.docx"))
                 if return_timestamps:
                     write_timestamps_to_docx(sample, result, date, audio_out_path)
             elif doc_type == "pdf":
@@ -76,8 +83,11 @@ def write_to_file(audio_names: list[str], results: list[dict], audio_in_path: st
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
                 pdf.cell(200, 10, f"Transcription for {sample} - {date}", ln=True)
-                pdf.cell(200, 10, result["text"], ln=True)
-                pdf.output(os.path.join(audio_out_path, f"transcription_{sample}.pdf"))
+                # Add a line break
+                pdf.ln(10)
+                # Add the long text using multi_cell
+                pdf.multi_cell(0, 10, result["text"])
+                pdf.output(os.path.join(audio_out_path, f"transcription_{sample.split('.')[0]}.pdf"))
                 if return_timestamps:
                     write_timestamps_to_pdf(sample, result, date, audio_out_path)
             else:
@@ -86,14 +96,20 @@ def write_to_file(audio_names: list[str], results: list[dict], audio_in_path: st
 
 def write_timestamps_to_docx(sample, result, date, write_path):
     doc = Document()
+    # Set font size and style
+    doc.styles['Normal'].font.size = Pt(12)
+    doc.styles['Normal'].font.name = 'Arial'
+
     doc.add_heading(f"Transcription with timestamps for {sample} - {date}", level=1)
+    # add a line break
+    doc.add_paragraph("")
     for chunk in result["chunks"]:
         curr_text = chunk["text"]
         times = chunk["timestamp"]
         start_time = str(times[0]) + " s"
         end_time = str(times[1]) + " s"
         doc.add_paragraph(f"{start_time} - {end_time}: {curr_text}")
-    doc.save(os.path.join(write_path, f"transcription_timestamped_{sample}.docx"))
+    doc.save(os.path.join(write_path, f"transcription_timestamped_{sample.split('.')[0]}.docx"))
 
 
 def write_timestamps_to_pdf(sample, result, date, write_path):
@@ -107,10 +123,8 @@ def write_timestamps_to_pdf(sample, result, date, write_path):
         times = chunk["timestamp"]
         start_time = str(times[0]) + " s"
         end_time = str(times[1]) + " s"
-        pdf.cell(200, 10, f"{start_time} - {end_time}: {curr_text}", ln=True)
-    pdf.output(os.path.join(write_path, f"transcription_timestamped_{sample}.pdf"))
-
-
+        pdf.multi_cell(0, 10, f"{start_time} - {end_time}: {curr_text}")
+    pdf.output(os.path.join(write_path, f"transcription_timestamped_{sample.split('.')[0]}.pdf"))
 
 
 def asr(sample: dict, return_timestamps: bool, generate_kwargs: dict = None) -> dict:
@@ -149,7 +163,7 @@ def asr(sample: dict, return_timestamps: bool, generate_kwargs: dict = None) -> 
 
 if __name__ == "__main__":
 
-    #Start timer
+    # Start timer
     start = datetime.datetime.now()
 
     print("Loading audio...")
@@ -164,10 +178,7 @@ if __name__ == "__main__":
 
     write_to_file(names, results, audio_in_path, audio_out_path, save_type, return_timestamps=return_timestamps)
 
-    #End timer in seconds
+    # End timer in seconds
     end = datetime.datetime.now()
-    print(f"Time taken (s): {end-start}")
+    print(f"Time taken (s): {end - start}")
     print("Done!")
-
-
-
