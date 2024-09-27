@@ -21,6 +21,8 @@ aiohttp==3.10.5
     # via fsspec
 aiosignal==1.3.1
     # via aiohttp
+alembic==1.13.3
+    # via optuna
 annotated-types==0.7.0
     # via speech-to-text
 antlr4-python3-runtime==4.9.3
@@ -35,6 +37,8 @@ argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 arrow==1.3.0
     # via isoduration
+asteroid-filterbanks==0.4.0
+    # via pyannote-audio
 asttokens==2.4.1
     # via stack-data
 async-lru==2.0.4
@@ -69,9 +73,12 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via flask
+    # via typer
     # via wandb
 coloredlogs==15.0.1
     # via speech-to-text
+colorlog==6.8.2
+    # via optuna
 comm==0.2.2
     # via ipykernel
     # via ipywidgets
@@ -110,8 +117,13 @@ distlib==0.3.8
     # via virtualenv
 docker-pycreds==0.4.0
     # via wandb
+docopt==0.6.2
+    # via pyannote-metrics
+    # via pyannote-pipeline
 docx==0.2.4
     # via speech-to-text
+einops==0.8.0
+    # via pyannote-audio
 epochalyst==0.3.2
     # via speech-to-text
 exceptiongroup==1.2.2
@@ -124,6 +136,7 @@ fastjsonschema==2.20.0
 filelock==3.15.4
     # via datasets
     # via huggingface-hub
+    # via pyannote-pipeline
     # via torch
     # via transformers
     # via triton
@@ -144,11 +157,15 @@ frozenlist==1.4.1
 fsspec==2024.6.1
     # via datasets
     # via huggingface-hub
+    # via lightning
+    # via pytorch-lightning
     # via torch
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via wandb
+greenlet==3.1.1
+    # via sqlalchemy
 h11==0.14.0
     # via httpcore
 httpcore==1.0.5
@@ -158,12 +175,17 @@ httpx==0.27.2
 huggingface-hub==0.24.6
     # via accelerate
     # via datasets
+    # via pyannote-audio
+    # via speechbrain
     # via tokenizers
     # via transformers
 humanfriendly==10.0
     # via coloredlogs
+    # via speech-to-text
 hydra-core==1.3.2
     # via speech-to-text
+hyperpyyaml==1.2.2
+    # via speechbrain
 identify==2.6.0
     # via pre-commit
 idna==3.8
@@ -202,6 +224,7 @@ joblib==1.4.2
     # via agogos
     # via librosa
     # via scikit-learn
+    # via speechbrain
 json5==0.9.25
     # via jupyterlab-server
 jsonpointer==3.0.0
@@ -212,6 +235,8 @@ jsonschema==4.23.0
     # via nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
+julius==0.2.7
+    # via torch-audiomentations
 jupyter==1.1.1
     # via speech-to-text
 jupyter-client==8.6.2
@@ -258,22 +283,37 @@ lazy-loader==0.4
     # via librosa
 librosa==0.10.2.post1
     # via datasets
+    # via torch-audiomentations
+lightning==2.4.0
+    # via pyannote-audio
+lightning-utilities==0.11.7
+    # via lightning
+    # via pytorch-lightning
+    # via torchmetrics
 llvmlite==0.43.0
     # via numba
     # via speech-to-text
 lxml==5.3.0
     # via docx
     # via python-docx
+mako==1.3.5
+    # via alembic
+markdown-it-py==3.0.0
+    # via rich
 markupsafe==2.1.5
     # via jinja2
+    # via mako
     # via nbconvert
     # via werkzeug
 matplotlib==3.9.2
+    # via pyannote-metrics
     # via seaborn
     # via speech-to-text
 matplotlib-inline==0.1.7
     # via ipykernel
     # via ipython
+mdurl==0.1.2
+    # via markdown-it-py
 mistune==3.0.2
     # via nbconvert
 mpmath==1.3.0
@@ -315,6 +355,7 @@ numba==0.60.0
     # via librosa
 numpy==1.26.4
     # via accelerate
+    # via asteroid-filterbanks
     # via contourpy
     # via dash-bootstrap-templates
     # via datasets
@@ -322,14 +363,21 @@ numpy==1.26.4
     # via librosa
     # via matplotlib
     # via numba
+    # via optuna
     # via pandas
     # via pandas-stubs
+    # via pyannote-core
+    # via pyannote-metrics
     # via pyarrow
+    # via pytorch-metric-learning
     # via scikit-learn
     # via scipy
     # via seaborn
     # via soxr
     # via speech-to-text
+    # via speechbrain
+    # via tensorboardx
+    # via torchmetrics
     # via torchvision
     # via transformers
 nvidia-cublas-cu12==12.1.3.1
@@ -362,6 +410,9 @@ nvidia-nvtx-cu12==12.1.105
     # via torch
 omegaconf==2.3.0
     # via hydra-core
+    # via pyannote-audio
+optuna==4.0.0
+    # via pyannote-pipeline
 overrides==7.7.0
     # via jupyter-server
 packaging==24.1
@@ -374,13 +425,23 @@ packaging==24.1
     # via jupyterlab
     # via jupyterlab-server
     # via lazy-loader
+    # via lightning
+    # via lightning-utilities
     # via matplotlib
     # via nbconvert
+    # via optuna
     # via plotly
     # via pooch
+    # via pytorch-lightning
+    # via speechbrain
+    # via tensorboardx
+    # via torch-pitch-shift
+    # via torchmetrics
     # via transformers
 pandas==2.2.2
     # via datasets
+    # via pyannote-database
+    # via pyannote-metrics
     # via seaborn
     # via speech-to-text
 pandas-stubs==2.2.2.240807
@@ -407,12 +468,15 @@ pooch==1.8.2
     # via librosa
 pre-commit==3.8.0
     # via speech-to-text
+primepy==1.3
+    # via torch-pitch-shift
 prometheus-client==0.20.0
     # via jupyter-server
 prompt-toolkit==3.0.47
     # via ipython
     # via jupyter-console
 protobuf==5.28.0
+    # via tensorboardx
     # via wandb
 psutil==6.0.0
     # via accelerate
@@ -423,6 +487,21 @@ ptyprocess==0.7.0
     # via terminado
 pure-eval==0.2.3
     # via stack-data
+pyannote-audio==3.3.2
+    # via speech-to-text
+pyannote-core==5.0.0
+    # via pyannote-audio
+    # via pyannote-database
+    # via pyannote-metrics
+    # via pyannote-pipeline
+pyannote-database==5.1.0
+    # via pyannote-audio
+    # via pyannote-metrics
+    # via pyannote-pipeline
+pyannote-metrics==3.2.1
+    # via pyannote-audio
+pyannote-pipeline==3.0.1
+    # via pyannote-audio
 pyarrow==17.0.0
     # via datasets
 pycparser==2.22
@@ -431,6 +510,7 @@ pygments==2.18.0
     # via ipython
     # via jupyter-console
     # via nbconvert
+    # via rich
 pyparsing==3.1.4
     # via matplotlib
 python-dateutil==2.9.0.post0
@@ -442,15 +522,25 @@ python-docx==1.1.2
     # via speech-to-text
 python-json-logger==2.0.7
     # via jupyter-events
+pytorch-lightning==2.4.0
+    # via lightning
+pytorch-metric-learning==2.6.0
+    # via pyannote-audio
 pytz==2024.1
     # via pandas
 pyyaml==6.0.2
     # via accelerate
     # via datasets
     # via huggingface-hub
+    # via hyperpyyaml
     # via jupyter-events
+    # via lightning
     # via omegaconf
+    # via optuna
     # via pre-commit
+    # via pyannote-database
+    # via pyannote-pipeline
+    # via pytorch-lightning
     # via transformers
     # via wandb
 pyzmq==26.2.0
@@ -482,21 +572,38 @@ rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
     # via jsonschema
     # via jupyter-events
+rich==13.8.1
+    # via pyannote-audio
+    # via typer
 rpds-py==0.20.0
     # via jsonschema
     # via referencing
+ruamel-yaml==0.18.6
+    # via hyperpyyaml
+ruamel-yaml-clib==0.2.8
+    # via ruamel-yaml
 safetensors==0.4.4
     # via accelerate
     # via transformers
 scikit-learn==1.5.1
     # via librosa
+    # via pyannote-metrics
+    # via pyannote-pipeline
+    # via pytorch-metric-learning
 scipy==1.14.1
     # via librosa
+    # via pyannote-core
+    # via pyannote-metrics
     # via scikit-learn
+    # via speechbrain
 seaborn==0.13.2
     # via speech-to-text
+semver==3.0.2
+    # via pyannote-audio
 send2trash==1.8.3
     # via jupyter-server
+sentencepiece==0.2.0
+    # via speechbrain
 sentry-sdk==2.13.0
     # via wandb
 setproctitle==1.3.3
@@ -504,7 +611,10 @@ setproctitle==1.3.3
 setuptools==74.0.0
     # via dash
     # via jupyterlab
+    # via lightning-utilities
     # via wandb
+shellingham==1.5.4
+    # via typer
 six==1.16.0
     # via asttokens
     # via bleach
@@ -518,20 +628,33 @@ smmap==5.0.1
 sniffio==1.3.1
     # via anyio
     # via httpx
+sortedcontainers==2.4.0
+    # via pyannote-core
 soundfile==0.12.1
     # via datasets
     # via librosa
+    # via pyannote-audio
 soupsieve==2.6
     # via beautifulsoup4
 soxr==0.5.0
     # via datasets
     # via librosa
+speechbrain==1.0.1
+    # via pyannote-audio
+sqlalchemy==2.0.35
+    # via alembic
+    # via optuna
 stack-data==0.6.3
     # via ipython
 sympy==1.13.2
+    # via pyannote-metrics
     # via torch
+tabulate==0.9.0
+    # via pyannote-metrics
 tenacity==9.0.0
     # via plotly
+tensorboardx==2.6.2.2
+    # via pyannote-audio
 termcolor==2.4.0
     # via fire
 terminado==0.18.1
@@ -548,12 +671,34 @@ tomli==2.0.1
     # via mypy
 torch==2.4.0
     # via accelerate
+    # via asteroid-filterbanks
     # via epochalyst
+    # via julius
+    # via lightning
+    # via pyannote-audio
+    # via pytorch-lightning
+    # via pytorch-metric-learning
     # via speech-to-text
+    # via speechbrain
+    # via torch-audiomentations
+    # via torch-pitch-shift
     # via torchaudio
+    # via torchmetrics
     # via torchvision
+torch-audiomentations==0.11.1
+    # via pyannote-audio
+torch-pitch-shift==1.2.5
+    # via torch-audiomentations
 torchaudio==2.4.0
+    # via pyannote-audio
     # via speech-to-text
+    # via speechbrain
+    # via torch-audiomentations
+    # via torch-pitch-shift
+torchmetrics==1.4.2
+    # via lightning
+    # via pyannote-audio
+    # via pytorch-lightning
 torchvision==0.19.0
     # via speech-to-text
 tornado==6.4.1
@@ -566,7 +711,13 @@ tornado==6.4.1
 tqdm==4.66.5
     # via datasets
     # via huggingface-hub
+    # via lightning
+    # via optuna
+    # via pyannote-pipeline
+    # via pytorch-lightning
+    # via pytorch-metric-learning
     # via speech-to-text
+    # via speechbrain
     # via transformers
 traitlets==5.14.3
     # via comm
@@ -588,21 +739,31 @@ transformers==4.44.2
     # via speech-to-text
 triton==3.0.0
     # via torch
+typer==0.12.5
+    # via pyannote-database
 types-python-dateutil==2.9.0.20240821
     # via arrow
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
 typing-extensions==4.12.2
+    # via alembic
     # via anyio
+    # via asteroid-filterbanks
     # via async-lru
     # via dash
     # via huggingface-hub
     # via ipython
     # via librosa
+    # via lightning
+    # via lightning-utilities
     # via mypy
+    # via pyannote-core
     # via python-docx
+    # via pytorch-lightning
     # via speech-to-text
+    # via sqlalchemy
     # via torch
+    # via typer
 tzdata==2024.1
     # via pandas
 uri-template==1.3.0
@@ -618,6 +779,7 @@ wcwidth==0.2.13
     # via prompt-toolkit
 webcolors==24.8.0
     # via jsonschema
+    # via speech-to-text
 webencodings==0.5.1
     # via bleach
     # via tinycss2
