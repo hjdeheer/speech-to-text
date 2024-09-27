@@ -1,7 +1,7 @@
 import datetime
 # Create an folder inside audio_out_path to save the files based on the date, h m and seconds
 import os
-
+from dotenv import load_dotenv
 import humanfriendly
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,6 +28,7 @@ return_timestamps = True
 
 save_type = "docx_pdf"
 
+load_dotenv()
 
 def load_audio(audio_path_folder: str) -> tuple[list[dict], list[str]]:
     """
@@ -292,7 +293,7 @@ def diarization(audio_folder: str, **kwargs) -> list[Annotation]:
     from pyannote.audio import Pipeline
     pipeline = Pipeline.from_pretrained(
         "pyannote/speaker-diarization-3.1",
-        use_auth_token="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")
+        use_auth_token=os.getenv("HUGGINGFACE_TOKEN"))
 
     pipeline.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     annotations = []

@@ -2,3 +2,4 @@
 in
 out
 Speech_to_text.egg-info
+.env
