@@ -190,9 +190,11 @@ def write_timestamps_to_docx(sample, result, annotations, date, write_path):
     for chunk in result["chunks"]:
         curr_text = chunk["text"]
         times = chunk["timestamp"]
+        if times[1] is None: #If last index is None
+            times = (times[0], times[0] + 1)
         start_time = str(times[0]) + " s"
         end_time = str(times[1]) + " s"
-        middle_s = (chunk["timestamp"][0] + chunk["timestamp"][1]) / 2
+        middle_s = (times[0] + times[1]) / 2
         speaker = get_speaker_of_chunk(middle_s, annotations)
         if speaker is not None:
             color = color_map[speaker]
@@ -300,9 +302,14 @@ def diarization(audio_folder: str, **kwargs) -> list[Annotation]:
     # process each file in the audio folder
     for file in os.listdir(audio_folder):
         audio_path = os.path.join(audio_folder, file)
+
+        #Use torchaudio.load to load the audio file for speedup of diarization
+        import torchaudio
+        waveform, sample_rate = torchaudio.load(audio_path)
+        audio_in_memory = {"waveform": waveform, "sample_rate": sample_rate}
         # run the pipeline on an audio file
         with ProgressHook() as hook:
-            annotation = pipeline(audio_path, hook=hook, **kwargs)
+            annotation = pipeline(audio_in_memory, hook=hook, **kwargs)
 
         annotations.append(annotation)
     return annotations
