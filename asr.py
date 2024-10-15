@@ -198,7 +198,7 @@ def write_timestamps_to_docx(sample, result, annotations, date, write_path):
         speaker = get_speaker_of_chunk(middle_s, annotations)
         if speaker is not None:
             color = color_map[speaker]
-            doc.add_paragraph(f"{start_time} - {end_time}: {curr_text}").runs[0].font.color.rgb = color
+            doc.add_paragraph(f"{start_time} - {end_time} ({speaker}): {curr_text}").runs[0].font.color.rgb = color
         else:
             doc.add_paragraph(f"{start_time} - {end_time}: {curr_text}")
     doc.save(os.path.join(write_path, f"transcription_timestamped_{sample.split('.')[0]}.docx"))
