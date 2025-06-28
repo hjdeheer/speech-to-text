@@ -2,8 +2,9 @@
 """
 Video to Audio Converter
 
-This script converts video files to audio files using ffmpeg.
-It can process a single file or all video files in a directory.
+This script converts all video files in the 'in' folder to mp3 audio files,
+saves them in the same 'in' folder, and moves the original video files to
+a 'processed_videos' folder. It uses ffmpeg for the conversion.
 """
 
 import os
@@ -92,7 +93,8 @@ def process_directory(
     input_dir: str, 
     output_dir: Optional[str] = None,
     audio_format: str = 'mp3',
-    audio_bitrate: str = '192k'
+    audio_bitrate: str = '192k',
+    processed_dir: str = 'processed_videos'
 ) -> List[str]:
     """
     Process all video files in a directory.
@@ -102,6 +104,7 @@ def process_directory(
         output_dir: Directory to save audio files (if None, uses input_dir)
         audio_format: Output audio format
         audio_bitrate: Audio bitrate for output files
+        processed_dir: Directory to move original video files after conversion
 
     Returns:
         List of paths to successfully created audio files
@@ -116,6 +119,15 @@ def process_directory(
             print(f"Created output directory: {output_dir}")
         except Exception as e:
             print(f"Error creating output directory: {e}")
+            return []
+
+    # Create processed videos directory if it doesn't exist
+    if not os.path.exists(processed_dir):
+        try:
+            os.makedirs(processed_dir, exist_ok=True)
+            print(f"Created processed videos directory: {processed_dir}")
+        except Exception as e:
+            print(f"Error creating processed videos directory: {e}")
             return []
 
     # Get all video files in the directory
@@ -154,6 +166,14 @@ def process_directory(
 
         if success and output_path:
             successful_conversions.append(output_path)
+            # Move the original video file to processed_dir
+            processed_path = os.path.join(processed_dir, video_file)
+            try:
+                import shutil
+                shutil.move(video_path, processed_path)
+                print(f"Moved original video to: {processed_path}")
+            except Exception as e:
+                print(f"Error moving original video file: {e}")
         elif success:
             # If output_path was None, construct it to return
             video_name = os.path.splitext(video_file)[0]
@@ -162,6 +182,14 @@ def process_directory(
                 f"{video_name}.{audio_format}"
             )
             successful_conversions.append(auto_output_path)
+            # Move the original video file to processed_dir
+            processed_path = os.path.join(processed_dir, video_file)
+            try:
+                import shutil
+                shutil.move(video_path, processed_path)
+                print(f"Moved original video to: {processed_path}")
+            except Exception as e:
+                print(f"Error moving original video file: {e}")
 
     return successful_conversions
 
@@ -205,39 +233,40 @@ if __name__ == "__main__":
         print("Please install ffmpeg to use this script")
         sys.exit(1)
 
-    # Parse command line arguments
-    args = parse_arguments()
+    # Default to processing the 'in' folder
+    input_dir = 'in'
 
-    # Determine if input is a file or directory
-    input_path = args.input
-    output_path = args.output
-    audio_format = args.format
-    audio_bitrate = args.bitrate
-
-    if os.path.isfile(input_path):
-        # Process a single file
-        success = convert_video_to_audio(
-            input_path, 
-            output_path, 
-            audio_format, 
-            audio_bitrate
-        )
-        sys.exit(0 if success else 1)
-    elif os.path.isdir(input_path):
-        # Process all video files in the directory
-        successful_files = process_directory(
-            input_path, 
-            output_path, 
-            audio_format, 
-            audio_bitrate
-        )
-
-        if successful_files:
-            print(f"Successfully converted {len(successful_files)} files")
-            sys.exit(0)
-        else:
-            print("No files were successfully converted")
+    # Create the 'in' directory if it doesn't exist
+    if not os.path.exists(input_dir):
+        try:
+            os.makedirs(input_dir, exist_ok=True)
+            print(f"Created input directory: {input_dir}")
+        except Exception as e:
+            print(f"Error creating input directory: {e}")
             sys.exit(1)
+
+    # Create processed_videos directory if it doesn't exist
+    processed_dir = 'processed_videos'
+    if not os.path.exists(processed_dir):
+        try:
+            os.makedirs(processed_dir, exist_ok=True)
+            print(f"Created processed videos directory: {processed_dir}")
+        except Exception as e:
+            print(f"Error creating processed videos directory: {e}")
+            sys.exit(1)
+
+    # Process all video files in the 'in' directory
+    successful_files = process_directory(
+        input_dir,
+        input_dir,  # Output to the same 'in' directory
+        'mp3',      # Always use mp3 format
+        '192k',     # Default bitrate
+        processed_dir  # Directory to move original videos to
+    )
+
+    if successful_files:
+        print(f"Successfully converted {len(successful_files)} files")
+        sys.exit(0)
     else:
-        print(f"Error: Input path does not exist: {input_path}")
+        print("No files were successfully converted")
         sys.exit(1)

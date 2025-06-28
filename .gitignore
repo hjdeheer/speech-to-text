@@ -4,3 +4,6 @@ out
 Speech_to_text.egg-info
 .env
 temp/
+
+backup
+processed_videos

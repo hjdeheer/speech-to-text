@@ -1,6 +1,7 @@
 import datetime
 import os
 import subprocess
+import sys
 from typing import Dict, List, Optional, Tuple, Set, Any
 
 # Third-party imports
@@ -606,7 +607,7 @@ def asr(
         # Model configuration
         model_id = "openai/whisper-large-v3"
 
-        # Load model with appropriate settings
+        # Load model with appropriate settings and gradient checkpointing
         print(f"Loading ASR model {model_id} on {device}...")
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_id, 
@@ -615,18 +616,22 @@ def asr(
             use_safetensors=True
         )
         model.to(device)
+        
+        # Enable gradient checkpointing to reduce memory usage
+        if hasattr(model, 'gradient_checkpointing_enable'):
+            model.gradient_checkpointing_enable()
 
         # Load processor (tokenizer and feature extractor)
         processor = AutoProcessor.from_pretrained(model_id)
 
-        # Create pipeline
+        # Create pipeline with reduced batch size for memory efficiency
         pipe = pipeline(
             "automatic-speech-recognition",
             model=model,
             tokenizer=processor.tokenizer,
             feature_extractor=processor.feature_extractor,
             chunk_length_s=30,
-            batch_size=64,
+            batch_size=24,
             torch_dtype=torch_dtype,
             device=device,
         )
@@ -640,8 +645,22 @@ def asr(
         )
 
         return result
+    except torch.cuda.OutOfMemoryError as e:
+        # Clear GPU cache and provide helpful error message
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        raise RuntimeError(
+            f"CUDA out of memory during ASR processing. Try reducing batch_size further or using a smaller model. Original error: {e}"
+        )
     except Exception as e:
+        # Clear GPU cache on any error
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         raise RuntimeError(f"ASR processing failed: {e}")
+    finally:
+        # Clean up GPU memory
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 
 def diarization(audio_folder: str, **kwargs) -> List[Annotation]:
@@ -809,6 +828,11 @@ if __name__ == "__main__":
             print(f"Processing ASR for file {i+1}/{len(audio_samples)}: {sample['path']}")
             result = asr(sample, return_timestamps=return_timestamps, generate_kwargs=generate_kwargs_asr)
             results.append(result)
+            
+            # Clear GPU memory after each file to prevent accumulation
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
 
         # Run speaker diarization if timestamps are enabled
         speaker_annotations = []

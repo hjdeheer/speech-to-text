@@ -50,7 +50,7 @@ dependencies = [
     "ipykernel>=6.27.1",
     "transformers>=4.44.2",
     "datasets[audio]>=2.21.0",
-    "accelerate>=0.33.0",
+    "accelerate>=1.8.1",
     "llvmlite>=0.43.0",
     "docx>=0.2.4",
     "python-docx>=1.1.2",
@@ -59,6 +59,7 @@ dependencies = [
     "webcolors>=24.8.0",
     "humanfriendly>=10.0",
     "python-dotenv>=1.0.1",
+    "bitsandbytes>=0.46.0",
 ]
 
 
