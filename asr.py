@@ -631,7 +631,7 @@ def asr(
             tokenizer=processor.tokenizer,
             feature_extractor=processor.feature_extractor,
             chunk_length_s=30,
-            batch_size=24,
+            batch_size=64,
             torch_dtype=torch_dtype,
             device=device,
         )
@@ -706,7 +706,7 @@ def diarization(audio_folder: str, **kwargs) -> List[Annotation]:
         # Get list of audio files
         audio_files = [f for f in os.listdir(audio_folder) 
                       if os.path.isfile(os.path.join(audio_folder, f)) and 
-                      f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a'))]
+                      f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a', '.wma'))]
 
         if not audio_files:
             raise ValueError(f"No audio files found in {audio_folder}")
